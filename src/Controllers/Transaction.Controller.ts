@@ -6,6 +6,10 @@ import { Transaction_response } from "../Models/Transaction_Response";
 import  express, {  Request, Response}   from "express";
 import { boolean } from "webidl-conversions";
 
+export function Transactions_Home(req:express.Request, res:express.Response)
+{
+        res.send("Welcoem to our bank");
+}
 
 export function Validate_Transaction(req:express.Request, res:express.Response)
 {

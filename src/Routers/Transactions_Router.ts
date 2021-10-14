@@ -20,7 +20,7 @@ export class Transactions_Router
         myrouter.use(express.json());
         
         myrouter.post('/',TC.Validate_Transaction);
-
+        myrouter.get('/',TC.Transactions_Home);
         return myrouter;
 
     }

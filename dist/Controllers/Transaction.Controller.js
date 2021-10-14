@@ -1,11 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Validate_Transaction = void 0;
+exports.Validate_Transaction = exports.Transactions_Home = void 0;
 var Account_1 = require("../Models/Account");
 var Card_1 = require("../Models/Card");
 var Client_1 = require("../Models/Client");
 var Transaction_1 = require("../Models/Transaction");
 var Transaction_Response_1 = require("../Models/Transaction_Response");
+function Transactions_Home(req, res) {
+    res.send("Welcoem to our bank");
+}
+exports.Transactions_Home = Transactions_Home;
 function Validate_Transaction(req, res) {
     var transaction = new Transaction_1.Transaction();
     transaction.card = Number(req.params['cardid']);
