@@ -29,7 +29,7 @@ var Transactions_Router = /** @class */ (function () {
     function Transactions_Router() {
     }
     Transactions_Router.prototype.getPath = function () {
-        return "/transactions";
+        return "/";
     };
     ;
     Transactions_Router.prototype.getRouter = function () {

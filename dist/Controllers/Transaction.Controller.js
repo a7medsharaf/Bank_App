@@ -13,31 +13,46 @@ function Validate_Transaction(req, res) {
     transaction.amount = Number(req.params['amount']);
     transaction.merchant = req.params['merchant'];
     transaction.timestamp = req.params['timestamp'];
+    var TR = new Transaction_Response_1.Transaction_response();
     var card = new Card_1.Card(transaction.card);
+    var ResSent = false;
+    if (card.id != transaction.card && !ResSent) {
+        TR.accepted = false;
+        TR.error = "Incorrect Card Number";
+        ResSent = true;
+        res.send(TR);
+    }
+    if (card.CCV != transaction.ccv && !ResSent) {
+        TR.accepted = false;
+        TR.error = "Incorrect CCV";
+        ResSent = true;
+        res.send(TR);
+    }
+    if (card.stopped && !ResSent) {
+        TR.accepted = false;
+        TR.error = "Card Suspended";
+        ResSent = true;
+        res.send(TR);
+    }
     var account = new Account_1.Account();
     account = card.Get_Account();
     transaction.account = account.id;
+    if (account.id === 0 && !ResSent) {
+        TR.accepted = false;
+        TR.error = "Card doesn't belong to the bank";
+        ResSent = true;
+        res.send(TR);
+    }
+    if (account.balance < transaction.amount && !ResSent) {
+        TR.accepted = false;
+        TR.error = "Not enough balance";
+        ResSent = true;
+        res.send(TR);
+    }
     var client = new Client_1.Client();
     client = account.Get_Client();
     transaction.client = client.id;
-    var TR = new Transaction_Response_1.Transaction_response();
-    if (card.CCV != transaction.ccv) {
-        TR.accepted = false;
-        TR.error = "Incorrect CCV";
-        res.send(TR);
-    }
-    if (account.balance < transaction.amount) {
-        TR.accepted = false;
-        TR.error = "Not enough balance";
-        res.send(TR);
-    }
-    if (card.stopped) {
-        TR.accepted = false;
-        TR.error = "Card Suspended";
-        res.send(TR);
-    }
     transaction.deduct();
     transaction.insert();
-    res.send(TR);
 }
 exports.Validate_Transaction = Validate_Transaction;

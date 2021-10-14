@@ -7,7 +7,7 @@ export class Transactions_Router
    
   
   getPath () :string{
-        return "/transactions";
+        return "/";
     };
     
     
