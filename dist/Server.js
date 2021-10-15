@@ -21,8 +21,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Transactions_Server_1 = require("./Servers/Transactions_Server");
 var dotenv = __importStar(require("dotenv"));
-dotenv.config({ path: __dirname + "//Bank.env" });
-var PORT = parseInt(process.env.PORT, 10) || 8888;
+dotenv.config();
+var PORT = parseInt(process.env.PORT, 10);
 console.log(PORT);
 console.log(__dirname);
 var TS = new Transactions_Server_1.Transactions_Server(PORT);
