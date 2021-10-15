@@ -5,6 +5,9 @@ import { Transaction } from "../Models/Transaction";
 import { Transaction_response } from "../Models/Transaction_Response";
 import  express, {  Request, Response}   from "express";
 import { boolean } from "webidl-conversions";
+import * as ClientsDB from "../Services/DB_Services/Clients";
+import * as CardsDB from   "../Services/DB_Services/Cards";
+import * as AccountsDB from   "../Services/DB_Services/Accounts";
 
 export function Transactions_Home(req:express.Request, res:express.Response)
 {
@@ -14,16 +17,20 @@ export function Transactions_Home(req:express.Request, res:express.Response)
 export function Validate_Transaction(req:express.Request, res:express.Response)
 {
     let transaction=new Transaction();
-   
-    transaction.card=Number(req.params['cardid']);
-    transaction.ccv=req.params['ccv'];
-    transaction.amount=Number(req.params['amount']);
-    transaction.merchant=req.params['merchant'];
-    transaction.timestamp=req.params['timestamp'];
+   // console.log(req.body);
+    transaction.card=Number(req.body['cardid']);
+    transaction.ccv=req.body['ccv'];
+    transaction.amount=Number(req.body['amount']);
+    transaction.merchant=req.body['merchant'];
+    transaction.timestamp=req.body['timestamp'];
   
     let TR=new Transaction_response();
 
     let card=new Card(transaction.card);
+    //let card=CardsDB.Find_Card_By_ID(transaction.card);
+    console.log( transaction.card +" "+ typeof( transaction.card));
+    CardsDB.Find_Card_By_ID( transaction.card ).then((result)=>{card=result;
+    console.log(card);
 
    let  ResSent:boolean=false;
 
@@ -35,11 +42,12 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
             res.send(TR);
             
     }
+    console.log(card);
 
     if(card.CCV != transaction.ccv && !ResSent)
     {
             TR.accepted=false;
-            TR.error="Incorrect CCV";
+            TR.error="Incorrect CCV card->"+ card.CCV ;
             ResSent=true;
             res.send(TR);
            
@@ -54,9 +62,15 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
        
     }
 
-
+  if(!ResSent)
+  {
      let account=new Account();
+
+     
      account=card.Get_Account();
+     AccountsDB.Find_Account_By_ID(card.Account).then((result)=>{
+             console.log(result.balance.toString())
+             account=result;
      transaction.account=account.id;
 
      if(account.id === 0  && !ResSent)
@@ -83,9 +97,29 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
      client=account.Get_Client();
      transaction.client = client.id;
 
-
      transaction.deduct();
      transaction.insert();
+     TR.error="No errors";
+     TR.accepted=true;
+     ResSent=true;
+     res.send(TR);
+     console.log(ResSent);
+        });
 
- 
+    }    
+
+}).catch((err)=>{console.log(err);
+        TR.accepted=false;
+        TR.error="Incorrect Card Number";
+        
+        res.send(TR);
+        
+
+}
+).finally(()=>{
+
+       
+
+
+});
 }

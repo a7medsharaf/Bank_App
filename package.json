@@ -5,7 +5,8 @@
   "main": "./dist/Server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./dist/Server.js"
+    "start": "node ./dist/Server.js",
+    "dev": "tsc-watch --onSuccess \"nodemon ./dist/Server.js\""
   },
   "dependencies": {
     "@types/node": "^16.11.0",
@@ -158,6 +159,7 @@
     "toidentifier": "^1.0.0",
     "touch": "^3.1.0",
     "tr46": "^2.1.0",
+    "tsc-watch": "^4.5.0",
     "type-fest": "^0.20.2",
     "type-is": "^1.6.18",
     "typedarray-to-buffer": "^3.1.5",
