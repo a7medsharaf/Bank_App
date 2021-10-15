@@ -1,5 +1,5 @@
 export class Transaction {
-
+    Payment_gateway_ID:number;
     client:number;
     account:number;
     card:number;
@@ -15,12 +15,18 @@ export class Transaction {
       this.amount=0;
       this.merchant="";
       this.timestamp="";
-      this.ccv="";      
+      this.ccv=""; 
+      this.Payment_gateway_ID=0;     
     }
 
-  deduct()
+  deduct(CID:number,Amount:number)
   {
       //decrease balance by amount
+  }
+
+  Add_To_payment_gateway(Payment_gateway_ID:Number,Amount:Number):number
+  {
+     return 600;
   }
 
   insert()

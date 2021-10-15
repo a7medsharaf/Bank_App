@@ -10,9 +10,13 @@ var Transaction = /** @class */ (function () {
         this.merchant = "";
         this.timestamp = "";
         this.ccv = "";
+        this.Payment_gateway_ID = 0;
     }
-    Transaction.prototype.deduct = function () {
+    Transaction.prototype.deduct = function (CID, Amount) {
         //decrease balance by amount
+    };
+    Transaction.prototype.Add_To_payment_gateway = function (Payment_gateway_ID, Amount) {
+        return 600;
     };
     Transaction.prototype.insert = function () {
         //add transaction to the database

@@ -38,6 +38,7 @@ function Validate_Transaction(req, res) {
     transaction.ccv = req.body['ccv'];
     transaction.amount = Number(req.body['amount']);
     transaction.merchant = req.body['merchant'];
+    transaction.Payment_gateway_ID = Number(req.body['Payment_gateway_ID']);
     transaction.timestamp = req.body['timestamp'];
     var TR = new Transaction_Response_1.Transaction_response();
     var card = new Card_1.Card(transaction.card);
@@ -88,10 +89,12 @@ function Validate_Transaction(req, res) {
                 var client = new Client_1.Client();
                 client = account_1.Get_Client();
                 transaction.client = client.id;
-                transaction.deduct();
+                transaction.deduct(client.id, transaction.amount);
+                var newbalance = transaction.Add_To_payment_gateway(transaction.Payment_gateway_ID, transaction.amount);
                 transaction.insert();
                 TR.error = "No errors";
                 TR.accepted = true;
+                TR.Payment_gateway_Balance = newbalance;
                 ResSent = true;
                 res.send(TR);
                 console.log(ResSent);
