@@ -36,7 +36,7 @@ var Transactions_Router = /** @class */ (function () {
         var myrouter = express_1.default.Router();
         myrouter.use(express_1.default.urlencoded());
         myrouter.use(express_1.default.json());
-        myrouter.post('/', TC.Validate_Transaction);
+        myrouter.post('/', TC.CreateTransaction);
         myrouter.get('/', TC.Transactions_Home);
         return myrouter;
     };

@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -54,53 +35,38 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 exports.CreateTransaction = exports.Transactions_Home = void 0;
 var Card_1 = require("../Models/Card");
 var Transaction_Response_1 = require("../Models/Transaction_Response");
-var CardsDB = __importStar(require("../Services/DB_Services/Cards"));
-var AccountsDB = __importStar(require("../Services/DB_Services/Accounts"));
-var transaction = __importStar(require("../Services/DB_Services/Transaction"));
+var CardsDB = require("../Services/DB_Services/Cards");
+var AccountsDB = require("../Services/DB_Services/Accounts");
+var transaction = require("../Services/DB_Services/Transaction");
 function Transactions_Home(req, res) {
     res.send("Welcoem to our bank");
 }
 exports.Transactions_Home = Transactions_Home;
 function deduct(Payment_gateway, clientID, clientID2, T_type, accountID, cardID, amount, merchant, timestamp, Cooresponding_TID, account) {
     return __awaiter(this, void 0, void 0, function () {
-        var transactionForClientid, old_Payment_gateway, temp, transactionForGatewayid;
+        var transactionForClientid, temp, transactionForGatewayid;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    //decrease balance by amount INSERT TRANSACTION 1 AND 2 
-                    console.log("1");
-                    //let transactionForClientid = new ObjectId
+                    // INSERT TRANSACTION 1 AND 2 
                     clientID = account.client;
                     return [4 /*yield*/, transaction.insert_One({ Payment_gateway: Payment_gateway, clientID: clientID, clientID2: clientID2, T_type: T_type, accountID: accountID, cardID: cardID, amount: amount, merchant: merchant, timestamp: timestamp, Cooresponding_TID: Cooresponding_TID })];
                 case 1:
                     transactionForClientid = _a.sent();
-                    console.log(transactionForClientid);
-                    console.log(account.Get_Balance);
                     T_type = "C";
-                    old_Payment_gateway = Payment_gateway;
                     Payment_gateway = 0;
                     temp = clientID;
                     clientID = clientID2;
                     clientID2 = temp;
                     Cooresponding_TID = transactionForClientid.toString();
-                    console.log("3");
                     return [4 /*yield*/, transaction.insert_One({ Payment_gateway: Payment_gateway, clientID: clientID, clientID2: clientID2, T_type: T_type, accountID: accountID, cardID: cardID, amount: amount, merchant: merchant, timestamp: timestamp, Cooresponding_TID: Cooresponding_TID })];
                 case 2:
                     transactionForGatewayid = _a.sent();
-                    console.log(transactionForGatewayid);
-                    console.log("4");
-                    // T_type = "deduct"
-                    // Payment_gateway = old_Payment_gateway
-                    // let temp2 = clientID2
-                    // clientID2 = clientID
-                    // clientID = temp
-                    // console.log("5")
                     transaction.updateone(transactionForClientid, transactionForGatewayid.toString());
-                    console.log("6");
                     return [2 /*return*/];
             }
         });
@@ -120,17 +86,8 @@ function CreateTransaction(req, res) {
     var ccv = req.body['ccv'];
     var Cooresponding_TID;
     var account;
-    // // console.log(req.body);
-    // transaction.card = Number(req.body['cardid']);
-    // let ccv = req.body['ccv'];
-    // transaction.amount = Number(req.body['amount']);
-    // transaction.merchant = req.body['merchant'];
-    // transaction.Payment_gateway = Number(req.body['Payment_gateway_ID']);
-    // transaction.timestamp = req.body['timestamp'];
     var TR = new Transaction_Response_1.Transaction_response();
     var card = new Card_1.Card(cardID);
-    //let card=CardsDB.Find_Card_By_ID(transaction.card);
-    console.log(cardID + " " + typeof (cardID));
     CardsDB.Find_Card_By_ID(cardID).then(function (result) {
         card = result;
         console.log(card);
@@ -172,22 +129,21 @@ function CreateTransaction(req, res) {
             }
             console.log(Payment_gateway, clientID, clientID2, T_type, accountID, cardID, amount, merchant, timestamp, Cooresponding_TID, account);
             deduct(Payment_gateway, clientID, clientID2, T_type, accountID, cardID, amount, merchant, timestamp, Cooresponding_TID, account);
-            // let newbalance: number = transaction.Add_To_payment_gateway(transaction.Payment_gateway_ID, transaction.amount);
-            // transaction.insert();
+            // UPDATE BALANCE HERE
             TR.error = "No errors";
             TR.accepted = true;
-            TR.Payment_gateway_Balance = 70000;
+            TR.Payment_gateway_Balance = 0;
             ResSent = true;
             res.send(TR);
             console.log(ResSent);
-        }).catch(function (e) {
+        })["catch"](function (e) {
             console.log(e);
             return res.status(404).send(e.message);
         });
-    }).catch(function (err) {
+    })["catch"](function (err) {
         console.log(err);
         return res.status(404).send(err);
-    }).finally(function () {
+    })["finally"](function () {
     });
 }
 exports.CreateTransaction = CreateTransaction;
