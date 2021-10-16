@@ -92,14 +92,21 @@ function Validate_Transaction(req, res) {
         res.send(TR);
     }).finally(function () {
         if (!ResSent) {
-            transaction.deduct(account.id, transaction.amount);
-            var newbalance = transaction.Add_To_payment_gateway(transaction.Payment_gateway_ID, transaction.amount);
-            transaction.insert();
-            TR.error = "No errors";
-            TR.accepted = true;
-            TR.Payment_gateway_Balance = newbalance;
-            ResSent = true;
-            res.send(TR);
+            AccountsDB.update_balance(account, transaction.amount * -1).then(function (result) {
+                var Payment_gateway_Account = new Account_1.Account();
+                return AccountsDB.Find_Account_By_Paymentid(transaction.Payment_gateway_ID);
+            }).then(function (result) {
+                return AccountsDB.update_balance(result, transaction.amount);
+            }).then(function (result) {
+                var newbalance = result.balance;
+                transaction.insert();
+                TR.error = "No errors";
+                TR.accepted = true;
+                TR.Payment_gateway_Balance = newbalance;
+                ResSent = true;
+                res.send(TR);
+            });
+            // Payment_gateway_Account=AccountsDB.Find_Account_By_ID()
         }
     });
 }

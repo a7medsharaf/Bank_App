@@ -12,9 +12,6 @@ var Transaction = /** @class */ (function () {
         this.ccv = "";
         this.Payment_gateway_ID = 0;
     }
-    Transaction.prototype.deduct = function (CID, Amount) {
-        //decrease balance by amount
-    };
     Transaction.prototype.Add_To_payment_gateway = function (Payment_gateway_ID, Amount) {
         return 600;
     };

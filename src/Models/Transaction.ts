@@ -19,10 +19,7 @@ export class Transaction {
       this.Payment_gateway_ID=0;     
     }
 
-  deduct(CID:number,Amount:number)
-  {
-      //decrease balance by amount
-  }
+  
 
   Add_To_payment_gateway(Payment_gateway_ID:Number,Amount:Number):number
   {

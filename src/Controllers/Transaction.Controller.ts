@@ -113,14 +113,26 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
 
        if(!ResSent)
        {
-        transaction.deduct(account.id,transaction.amount);
-        let newbalance:number= transaction.Add_To_payment_gateway(transaction.Payment_gateway_ID,transaction.amount);
-         transaction.insert();
-         TR.error="No errors";
-         TR.accepted=true;
-         TR.Payment_gateway_Balance=newbalance;
-         ResSent=true;
-         res.send(TR);
+       
+         AccountsDB.update_balance(account,transaction.amount*-1).then((result)=>{
+         let Payment_gateway_Account=new Account();
+         return AccountsDB.Find_Account_By_Paymentid(transaction.Payment_gateway_ID)
+         }
+         ).then((result)=>{
+                return AccountsDB.update_balance(result,transaction.amount)
+         }).then((result)=>{
+                let newbalance:number=result.balance;
+                transaction.insert();
+                TR.error="No errors";
+                TR.accepted=true;
+                TR.Payment_gateway_Balance=newbalance;
+                ResSent=true;
+                res.send(TR);
+         });
+
+         
+        // Payment_gateway_Account=AccountsDB.Find_Account_By_ID()
+        
        }
 
 
