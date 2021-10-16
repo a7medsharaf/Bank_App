@@ -26,31 +26,30 @@ var Client_1 = require("../../Models/Client");
 function Find_Client_By_ID(id) {
     return new Promise(function (resolve, reject) {
         Connect().then(function (result) {
-            Find_One(result).then(function (result2) {
-                result2.forEach(function (element) {
-                    if (element['id'] === id) {
-                        var myclient = new Client_1.Client();
-                        console.log(element);
-                        myclient.id = element['id'];
-                        myclient.name = element['Name'];
-                        myclient.address = element['Address'];
-                        console.log(myclient);
-                        resolve(myclient);
-                    }
-                });
-                reject("Client not found");
-            });
+            return Find_One(result);
+        }).then(function (result2) {
+            resolve(Filter_clients(result2, id));
         });
     });
 }
 exports.Find_Client_By_ID = Find_Client_By_ID;
+var Filter_clients = function (result2, id) {
+    var myclient = new Client_1.Client();
+    result2.forEach(function (element) {
+        if (element['id'] === id) {
+            myclient.id = element['id'];
+            myclient.name = element['Name'];
+            myclient.address = element['Address'];
+        }
+    });
+    return (myclient);
+};
 function Connect() {
     return new Promise(function (resolve, reject) {
         dotenv.config();
         mongodb_1.MongoClient.connect(process.env.URI, function (err, db) {
             if (err)
                 reject(err);
-            console.log(process.env.DBNAME + " " + process.env.URI);
             if (db != undefined) {
                 resolve(db);
             }

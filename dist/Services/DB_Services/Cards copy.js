@@ -24,33 +24,35 @@ var mongodb_1 = require("mongodb");
 var dotenv = __importStar(require("dotenv"));
 var Card_1 = require("../../Models/Card");
 function Find_Card_By_ID(id) {
+    console.log(id);
     return new Promise(function (resolve, reject) {
         Connect().then(function (result) {
-            return Find_One(result);
-        }).then(function (result2) {
-            resolve(Filter_cards(result2, id));
+            Find_One(result).then(function (result2) {
+                result2.forEach(function (element) {
+                    if (element['id'] === id) {
+                        var mycard = new Card_1.Card(0);
+                        //console.log(element);
+                        mycard.id = element['id'];
+                        mycard.Account = element['account'];
+                        mycard.CCV = element['CCV'];
+                        mycard.stopped = element['stopped'];
+                        console.log(mycard);
+                        resolve(mycard);
+                    }
+                });
+                reject("Card not found");
+            });
         });
     });
 }
 exports.Find_Card_By_ID = Find_Card_By_ID;
-var Filter_cards = function (result2, id) {
-    var mycard = new Card_1.Card(0);
-    result2.forEach(function (element) {
-        if (element['id'] === id) {
-            mycard.id = element['id'];
-            mycard.Account = element['account'];
-            mycard.CCV = element['CCV'];
-            mycard.stopped = element['stopped'];
-        }
-    });
-    return (mycard);
-};
 function Connect() {
     return new Promise(function (resolve, reject) {
         dotenv.config();
         mongodb_1.MongoClient.connect(process.env.URI, function (err, db) {
             if (err)
                 reject(err);
+            console.log(process.env.DBNAME + " " + process.env.URI);
             if (db != undefined) {
                 resolve(db);
             }

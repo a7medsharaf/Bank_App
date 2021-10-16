@@ -8,35 +8,43 @@ import { Transaction } from "../../Models/Transaction";
 
 export function Find_Client_By_ID(id:number):Promise<Client>
 {
-   return new Promise((resolve,reject)=>{
+
+  return new Promise((resolve,reject)=>{
 
     Connect().then((result)=>
     {
-            Find_One(result).then(
-              (result2)=>
-              {
-                
-                result2.forEach(element => {
-                  if(element['id']===id)
-                  {
-                     var myclient:Client =new Client();
-                     console.log(element);
-                     myclient.id=element['id'];
-                     myclient.name=element['Name'];
-                     myclient.address=element['Address'];
-                     console.log(myclient);
-                    resolve(myclient);                      
-                  }
-                });
-                
-                reject("Client not found");
-              }
-            )
+            return Find_One(result)
+    }
+  ).then(
+    (result2)=>
+    {
+ 
+     resolve(Filter_clients(result2,id));
     }
   )
 
-   })
+   });
   
+}
+
+
+let Filter_clients= function(result2:Document[],id:Number):Client
+{
+  var myclient:Client =new Client();
+  result2.forEach(element => {
+    if(element['id']===id)
+    {
+
+       
+       myclient.id=element['id'];
+       myclient.name=element['Name'];
+       myclient.address=element['Address'];
+       
+      
+                         
+    }
+  });
+  return(myclient);   
 }
 
 function Connect():Promise<MongoClient>
@@ -46,7 +54,7 @@ function Connect():Promise<MongoClient>
     dotenv.config();
     MongoClient.connect(process.env.URI as string, function(err, db) {
       if (err) reject(err);
-      console.log(process.env.DBNAME as string +" "+process.env.URI as string);
+     
     
       if(db!=undefined)
       {

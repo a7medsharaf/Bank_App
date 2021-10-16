@@ -9,6 +9,7 @@ import * as ClientsDB from "../Services/DB_Services/Clients";
 import * as CardsDB from   "../Services/DB_Services/Cards";
 import * as AccountsDB from   "../Services/DB_Services/Accounts";
 
+
 export function Transactions_Home(req:express.Request, res:express.Response)
 {
         res.send("Welcoem to our bank");
@@ -17,23 +18,22 @@ export function Transactions_Home(req:express.Request, res:express.Response)
 export function Validate_Transaction(req:express.Request, res:express.Response)
 {
     let transaction=new Transaction();
-   // console.log(req.body);
+   
     transaction.card=Number(req.body['cardid']);
     transaction.ccv=req.body['ccv'];
     transaction.amount=Number(req.body['amount']);
     transaction.merchant=req.body['merchant'];
     transaction.Payment_gateway_ID=Number(req.body['Payment_gateway_ID']);
     transaction.timestamp=req.body['timestamp'];
-  
+    let account=new Account();
     let TR=new Transaction_response();
-
+    let  ResSent:boolean=false;
     let card=new Card(transaction.card);
-    //let card=CardsDB.Find_Card_By_ID(transaction.card);
-    console.log( transaction.card +" "+ typeof( transaction.card));
+    
+   
     CardsDB.Find_Card_By_ID( transaction.card ).then((result)=>{card=result;
-    console.log(card);
-
-   let  ResSent:boolean=false;
+    
+  
 
     if(card.id != transaction.card && !ResSent)
     {
@@ -43,12 +43,11 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
             res.send(TR);
             
     }
-    console.log(card);
-
+   
     if(card.CCV != transaction.ccv && !ResSent)
     {
             TR.accepted=false;
-            TR.error="Incorrect CCV card->"+ card.CCV ;
+            TR.error="Incorrect CCV card->"+ transaction.ccv ;
             ResSent=true;
             res.send(TR);
            
@@ -63,57 +62,48 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
        
     }
 
-  if(!ResSent)
-  {
-     let account=new Account();
+    return  AccountsDB.Find_Account_By_ID(card.Account);
+}).then((result=>{
 
-     
-     account=card.Get_Account();
-     AccountsDB.Find_Account_By_ID(card.Account).then((result)=>{
-             console.log(result.balance.toString())
-             account=result;
-     transaction.account=account.id;
 
-     if(account.id === 0  && !ResSent)
-     {
-             TR.accepted=false;
-             TR.error="Card doesn't belong to the bank";
-             ResSent=true;
-             res.send(TR);
-             
-     }
-
-     
-     if(account.balance<transaction.amount && !ResSent)
-     {
-        TR.accepted=false;
-        TR.error="Not enough balance";
-        ResSent=true;
-        res.send(TR);
         
-     }
+        account=result;
+        transaction.account=account.id;
+        if(account.id === 0  && !ResSent)
+        {
+                TR.accepted=false;
+                TR.error="Card doesn't belong to the bank";
+                ResSent=true;
+                res.send(TR);
+                
+        }
+   
+        
+        if(account.balance<transaction.amount && !ResSent)
+        {
+           TR.accepted=false;
+           TR.error="Not enough balance";
+           ResSent=true;
+           res.send(TR);
+           
+        }
+   
+        return ClientsDB.Find_Client_By_ID(account.client);
+})).then((result)=>{
+        if(!ResSent)
+        {
+                TR.Client_name=result.name;
+                transaction.client = result.id;
+        }
+})
 
 
-     let client=new Client();
-     client=account.Get_Client();
-     transaction.client = client.id;
 
-     transaction.deduct(client.id,transaction.amount);
-    let newbalance:number= transaction.Add_To_payment_gateway(transaction.Payment_gateway_ID,transaction.amount);
-     transaction.insert();
-     TR.error="No errors";
-     TR.accepted=true;
-     TR.Payment_gateway_Balance=newbalance;
-     ResSent=true;
-     res.send(TR);
-     console.log(ResSent);
-        });
 
-    }    
 
-}).catch((err)=>{console.log(err);
+.catch((err)=>{
         TR.accepted=false;
-        TR.error="Incorrect Card Number";
+        TR.error=err;
         
         res.send(TR);
         
@@ -121,7 +111,17 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
 }
 ).finally(()=>{
 
-       
+       if(!ResSent)
+       {
+        transaction.deduct(account.id,transaction.amount);
+        let newbalance:number= transaction.Add_To_payment_gateway(transaction.Payment_gateway_ID,transaction.amount);
+         transaction.insert();
+         TR.error="No errors";
+         TR.accepted=true;
+         TR.Payment_gateway_Balance=newbalance;
+         ResSent=true;
+         res.send(TR);
+       }
 
 
 });

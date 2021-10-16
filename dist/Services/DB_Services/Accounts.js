@@ -26,31 +26,30 @@ var Account_1 = require("../../Models/Account");
 function Find_Account_By_ID(id) {
     return new Promise(function (resolve, reject) {
         Connect().then(function (result) {
-            Find_One(result).then(function (result2) {
-                result2.forEach(function (element) {
-                    if (element['id'] === id) {
-                        var myAccount = new Account_1.Account();
-                        console.log(element);
-                        myAccount.id = element['id'];
-                        myAccount.balance = element['Balance'];
-                        myAccount.client = element['client'];
-                        console.log(myAccount);
-                        resolve(myAccount);
-                    }
-                });
-                reject("Account not found");
-            });
+            return Find_One(result);
+        }).then(function (result2) {
+            resolve(Filter_Accouns(result2, id));
         });
     });
 }
 exports.Find_Account_By_ID = Find_Account_By_ID;
+var Filter_Accouns = function (result2, id) {
+    var myAccount = new Account_1.Account();
+    result2.forEach(function (element) {
+        if (element['id'] === id) {
+            myAccount.id = element['id'];
+            myAccount.balance = element['Balance'];
+            myAccount.client = element['client'];
+        }
+    });
+    return (myAccount);
+};
 function Connect() {
     return new Promise(function (resolve, reject) {
         dotenv.config();
         mongodb_1.MongoClient.connect(process.env.URI, function (err, db) {
             if (err)
                 reject(err);
-            console.log(process.env.DBNAME + " " + process.env.URI);
             if (db != undefined) {
                 resolve(db);
             }
