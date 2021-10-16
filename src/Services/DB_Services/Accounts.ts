@@ -8,37 +8,42 @@ import { Transaction } from "../../Models/Transaction";
 
 export function Find_Account_By_ID(id:number):Promise<Account>
 {
-   return new Promise((resolve,reject)=>{
+
+  return new Promise((resolve,reject)=>{
 
     Connect().then((result)=>
     {
-            Find_One(result).then(
-              (result2)=>
-              {
-                
-                result2.forEach(element => {
-                  if(element['id']===id)
-                  {
-                     var myAccount:Account =new Account();
-                     console.log(element);
-                     myAccount.id=element['id'];
-                     myAccount.balance=element['Balance'];
-                     myAccount.client=element['client'];
-                     
-                     
-                     console.log(myAccount);
-                    resolve(myAccount);                      
-                  }
-                });
-                
-                reject("Account not found");
-              }
-            )
+            return Find_One(result)
+    }
+  ).then(
+    (result2)=>
+    {
+ 
+     resolve(Filter_Accouns(result2,id));
     }
   )
 
-   })
+   });
   
+}
+
+
+let Filter_Accouns= function(result2:Document[],id:Number):Account
+{
+  var myAccount:Account =new Account();
+  result2.forEach(element => {
+    if(element['id']===id)
+    {
+
+      myAccount.id=element['id'];
+      myAccount.balance=element['Balance'];
+      myAccount.client=element['client'];
+       
+      
+                         
+    }
+  });
+  return(myAccount);   
 }
 
 function Connect():Promise<MongoClient>
@@ -48,7 +53,7 @@ function Connect():Promise<MongoClient>
     dotenv.config();
     MongoClient.connect(process.env.URI as string, function(err, db) {
       if (err) reject(err);
-      console.log(process.env.DBNAME as string +" "+process.env.URI as string);
+     
     
       if(db!=undefined)
       {

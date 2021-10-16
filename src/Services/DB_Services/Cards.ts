@@ -8,38 +8,44 @@ import { Transaction } from "../../Models/Transaction";
 
 export function Find_Card_By_ID(id:number):Promise<Card>
 {
-  console.log(id); 
+
   return new Promise((resolve,reject)=>{
 
     Connect().then((result)=>
     {
-            Find_One(result).then(
-              (result2)=>
-              {
-                
-                result2.forEach(element => {
-                  if(element['id']===id)
-                  {
-                     var mycard:Card =new Card(0);
-                     //console.log(element);
-                     mycard.id=element['id'];
-                     mycard.Account=element['account'];
-                     mycard.CCV=element['CCV'];
-                     mycard.stopped=element['stopped'];
-                     
-                     console.log(mycard);
-                    resolve(mycard);                      
-                  }
-                });
-                
-                reject("Card not found");
-              }
-            )
+            return Find_One(result)
+    }
+  ).then(
+    (result2)=>
+    {
+ 
+     resolve(Filter_cards(result2,id));
     }
   )
 
-   })
+   });
   
+}
+
+
+let Filter_cards= function(result2:Document[],id:Number):Card
+{
+  var mycard:Card =new Card(0);
+  result2.forEach(element => {
+    if(element['id']===id)
+    {
+
+       
+       mycard.id=element['id'];
+       mycard.Account=element['account'];
+       mycard.CCV=element['CCV'];
+       mycard.stopped=element['stopped'];
+       
+      
+                         
+    }
+  });
+  return(mycard);   
 }
 
 function Connect():Promise<MongoClient>
@@ -49,7 +55,7 @@ function Connect():Promise<MongoClient>
     dotenv.config();
     MongoClient.connect(process.env.URI as string, function(err, db) {
       if (err) reject(err);
-      console.log(process.env.DBNAME as string +" "+process.env.URI as string);
+      
     
       if(db!=undefined)
       {
