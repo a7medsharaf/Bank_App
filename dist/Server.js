@@ -21,8 +21,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Transactions_Server_1 = require("./Servers/Transactions_Server");
 var dotenv = __importStar(require("dotenv"));
-// @ts-ignore
-//import * as dbf2 from "./Services/Generic_DB_Services/FA"
 dotenv.config();
 var PORT = parseInt(process.env.PORT, 10);
 var TS = new Transactions_Server_1.Transactions_Server(PORT);
