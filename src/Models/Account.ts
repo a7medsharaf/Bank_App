@@ -16,10 +16,6 @@ balance:number;
       
     }
     
-Get_Client()
-{
-    return new Client();
-}
-  
+
 
 }

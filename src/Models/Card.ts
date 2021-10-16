@@ -19,12 +19,7 @@ stopped:boolean;
       
     }
 
-     Get_Account()
-    {
-
-               return new Account();
-    }
-
+    
   
 
 }
