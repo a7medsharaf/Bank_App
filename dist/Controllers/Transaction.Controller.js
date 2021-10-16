@@ -93,7 +93,6 @@ function Validate_Transaction(req, res) {
     }).finally(function () {
         if (!ResSent) {
             AccountsDB.update_balance(account, transaction.amount * -1).then(function (result) {
-                var Payment_gateway_Account = new Account_1.Account();
                 return AccountsDB.Find_Account_By_Paymentid(transaction.Payment_gateway_ID);
             }).then(function (result) {
                 return AccountsDB.update_balance(result, transaction.amount);
@@ -106,7 +105,6 @@ function Validate_Transaction(req, res) {
                 ResSent = true;
                 res.send(TR);
             });
-            // Payment_gateway_Account=AccountsDB.Find_Account_By_ID()
         }
     });
 }

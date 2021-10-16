@@ -115,7 +115,7 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
        {
        
          AccountsDB.update_balance(account,transaction.amount*-1).then((result)=>{
-         let Payment_gateway_Account=new Account();
+         
          return AccountsDB.Find_Account_By_Paymentid(transaction.Payment_gateway_ID)
          }
          ).then((result)=>{
@@ -131,7 +131,7 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
          });
 
          
-        // Payment_gateway_Account=AccountsDB.Find_Account_By_ID()
+       
         
        }
 
