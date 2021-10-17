@@ -8,7 +8,8 @@ import { boolean } from "webidl-conversions";
 import * as ClientsDB from "../Services/DB_Services/Clients";
 import * as CardsDB from   "../Services/DB_Services/Cards";
 import * as AccountsDB from   "../Services/DB_Services/Accounts";
-
+import * as TransactionDB from   "../Services/DB_Services/Transaction";
+import { ObjectId } from "bson";
 
 export function Transactions_Home(req:express.Request, res:express.Response)
 {
@@ -29,8 +30,13 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
     let TR=new Transaction_response();
     let  ResSent:boolean=false;
     let card=new Card(transaction.card);
-    
-   
+    let client=new Client();
+    let payment_account=new Account();
+    var TID_Debit:ObjectId;
+    var newbalance:number=0;
+    let operation_date_time=new Date().toUTCString();
+
+
     CardsDB.Find_Card_By_ID( transaction.card ).then((result)=>{card=result;
     
   
@@ -94,6 +100,7 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
         {
                 TR.Client_name=result.name;
                 transaction.client = result.id;
+                client=result;
         }
 })
 
@@ -119,16 +126,57 @@ export function Validate_Transaction(req:express.Request, res:express.Response)
          return AccountsDB.Find_Account_By_Paymentid(transaction.Payment_gateway_ID)
          }
          ).then((result)=>{
+                payment_account=result;
                 return AccountsDB.update_balance(result,transaction.amount)
          }).then((result)=>{
-                let newbalance:number=result.balance;
-                transaction.insert();
-                TR.error="No errors";
-                TR.accepted=true;
-                TR.Payment_gateway_Balance=newbalance;
-                ResSent=true;
-                res.send(TR);
-         });
+                newbalance=result.balance;
+               
+              
+                let Debit_Transaction=
+                {
+                        Payment_gateway: transaction.Payment_gateway_ID,
+                        clientID: client.id,
+                        clientID2: payment_account.client,
+                        T_type: 'D',
+                        accountID: account.id,
+                        cardID: transaction.card,
+                        amount: transaction.amount,
+                        merchant: transaction.merchant,
+                        timestamp: operation_date_time,
+                        Cooresponding_TID: ''     
+                }
+
+                return TransactionDB.insert_One(Debit_Transaction)
+         }).then((result_objectid)=>{
+                TID_Debit=result_objectid ;
+                let Credit_Transaction=
+                {
+                        Payment_gateway: transaction.Payment_gateway_ID,
+                        clientID: payment_account.client,
+                        clientID2: client.id,
+                        T_type: 'C',
+                        accountID: payment_account.id,
+                        cardID: transaction.card,
+                        amount: transaction.amount,
+                        merchant: transaction.merchant,
+                        timestamp: operation_date_time,
+                        Cooresponding_TID: TID_Debit.toString()  
+                }
+
+                return TransactionDB.insert_One(Credit_Transaction)
+         }).then((result)=>{
+
+                TransactionDB.updateone(TID_Debit,result.toString());
+                 TR.error="No errors";
+                 TR.accepted=true;
+                 TR.Payment_gateway_Balance=newbalance;
+                 ResSent=true;
+                 res.send(TR);
+
+         })
+         {
+
+         };
 
          
        
