@@ -172,14 +172,18 @@ function CreateTransaction(req, res) {
             }
             console.log(Payment_gateway, clientID, clientID2, T_type, accountID, cardID, amount, merchant, timestamp, Cooresponding_TID, account);
             deduct(Payment_gateway, clientID, clientID2, T_type, accountID, cardID, amount, merchant, timestamp, Cooresponding_TID, account);
-            // let newbalance: number = transaction.Add_To_payment_gateway(transaction.Payment_gateway_ID, transaction.amount);
-            // transaction.insert();
-            TR.error = "No errors";
-            TR.accepted = true;
-            TR.Payment_gateway_Balance = 70000;
-            ResSent = true;
-            res.send(TR);
-            console.log(ResSent);
+             AccountsDB.update_balance(account, amount * -1).then(function (result) {
+                return AccountsDB.Find_Account_By_Paymentid(Payment_gateway_ID);
+            }).then(function (result) {
+                return AccountsDB.update_balance(result,amount);
+            }).then(function (result) {
+                var newbalance = result.balance;
+                //transaction.insert();
+                TR.error = "No errors";
+                TR.accepted = true;
+                TR.Payment_gateway_Balance = newbalance;
+                ResSent = true;
+                res.send(TR);
         }).catch(function (e) {
             console.log(e);
             return res.status(404).send(e.message);
@@ -188,6 +192,7 @@ function CreateTransaction(req, res) {
         console.log(err);
         return res.status(404).send(err);
     }).finally(function () {
+
     });
 }
 exports.CreateTransaction = CreateTransaction;

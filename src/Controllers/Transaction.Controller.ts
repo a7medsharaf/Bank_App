@@ -119,11 +119,20 @@ export function CreateTransaction(req: express.Request, res: express.Response) {
                         console.log(Payment_gateway, clientID, clientID2, T_type, accountID, cardID, amount, merchant, timestamp, Cooresponding_TID, account)
                         deduct(Payment_gateway, clientID, clientID2, T_type, accountID, cardID, amount, merchant, timestamp, Cooresponding_TID, account);
                         // UPDATE BALANCE HERE
-                        TR.error = "No errors";
-                        TR.accepted = true;
-                        TR.Payment_gateway_Balance = 0;
-                        ResSent = true;
-                        res.send(TR);
+                                AccountsDB.update_balance(account,amount*-1).then((result)=>{
+
+                             return AccountsDB.Find_Account_By_Paymentid(Payment_gateway_ID)
+                             }
+                             ).then((result)=>{
+                                    return AccountsDB.update_balance(result,amount)
+                             }).then((result)=>{
+                                    let newbalance:number=result.balance;
+                                    transaction.insert();
+                                    TR.error="No errors";
+                                    TR.accepted=true;
+                                    TR.Payment_gateway_Balance=newbalance;
+                                    ResSent=true;
+                                    res.send(TR);
                         console.log(ResSent);
 
                 }).catch((e: any) => {
@@ -143,5 +152,4 @@ export function CreateTransaction(req: express.Request, res: express.Response) {
 
 
 
-        });
-}
+});}
