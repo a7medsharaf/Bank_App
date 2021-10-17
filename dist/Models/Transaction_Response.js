@@ -6,7 +6,6 @@ var Transaction_response = /** @class */ (function () {
         this.accepted = true;
         this.error = "";
         this.Payment_gateway_Balance = 0;
-        this.Client_name = "";
     }
     return Transaction_response;
 }());

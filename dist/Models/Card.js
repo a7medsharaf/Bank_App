@@ -8,6 +8,9 @@ var Card = /** @class */ (function () {
         this.CCV = "";
         this.stopped = false;
     }
+    Card.prototype.Get_Account = function () {
+        return this.Account;
+    };
     return Card;
 }());
 exports.Card = Card;

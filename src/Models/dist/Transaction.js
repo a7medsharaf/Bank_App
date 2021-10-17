@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 exports.Transaction = void 0;
 var Transaction = /** @class */ (function () {
     function Transaction(Payment_gateway, clientID, clientID2, T_type, account, card, amount, merchant, timestamp, Cooresponding_TID) {
@@ -24,15 +24,6 @@ var Transaction = /** @class */ (function () {
         this.Payment_gateway = Payment_gateway;
         this.clientID2 = clientID2;
     }
-    Transaction.prototype.deduct = function (CID, Amount) {
-        //decrease balance by amount INSERT TRANSACTION 1 AND 2 
-    };
-    // Add_To_payment_gateway(clientID2: Number, Amount: Number): number {
-    //   return 600;
-    // }
-    Transaction.prototype.insert = function () {
-        //add transaction to the database
-    };
     return Transaction;
 }());
 exports.Transaction = Transaction;
