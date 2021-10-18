@@ -22,27 +22,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Transactions_Router = void 0;
-var express_1 = __importDefault(require("express"));
-var TC = __importStar(require("../Controllers/Transaction.Controller"));
-var Auth_Middleware = __importStar(require("../Services/Middlewares/Authentication"));
-var Transactions_Router = /** @class */ (function () {
-    function Transactions_Router() {
-    }
-    Transactions_Router.prototype.getPath = function () {
-        return "/";
-    };
-    ;
-    Transactions_Router.prototype.getRouter = function () {
-        var myrouter = express_1.default.Router();
-        myrouter.use(express_1.default.urlencoded());
-        myrouter.use(express_1.default.json());
-        myrouter.use(Auth_Middleware.Apply_Authentication);
-        myrouter.post('/', TC.Validate_Transaction);
-        myrouter.get('/', TC.Transactions_Home);
-        return myrouter;
-    };
-    return Transactions_Router;
-}());
-exports.Transactions_Router = Transactions_Router;
-;
+exports.Apply_Authentication = void 0;
+var bcryptjs_1 = __importDefault(require("bcryptjs"));
+var UsersDB = __importStar(require("../../Services/DB_Services/users"));
+function Apply_Authentication(req, res, next) {
+    // @ts-ignore
+    UsersDB.Find_User_By_Username(req.headers['username']).then(function (result) {
+        // @ts-ignore
+        return bcryptjs_1.default.compareSync(req.headers["password"].toString(), result.Password);
+    }).then(function (result) {
+        if (result) {
+            console.log("User Authenticated from middleware");
+            next();
+        }
+        else {
+            console.log("User not Authenticated");
+            res.send("Authentication failed in middleware");
+        }
+    });
+}
+exports.Apply_Authentication = Apply_Authentication;

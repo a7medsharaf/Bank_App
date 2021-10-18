@@ -10,7 +10,7 @@ import * as CardsDB from   "../Services/DB_Services/Cards";
 import * as AccountsDB from   "../Services/DB_Services/Accounts";
 import * as TransactionDB from   "../Services/DB_Services/Transaction";
 import { ObjectId } from "bson";
-import {check_user} from "./Login.Controller";
+
 
 export function Transactions_Home(req:express.Request, res:express.Response)
 {
@@ -38,18 +38,7 @@ export async function Validate_Transaction(req:express.Request, res:express.Resp
     let operation_date_time=new Date().toUTCString();
 
      
-    try
-    {
-        let user_auth=await check_user(req);
-     if(!user_auth)
-     {
-        TR.accepted=false;
-        TR.error="Incorrect password";
-        ResSent=true;
-        res.send(TR);
-     }
-     else
-     {
+    
     CardsDB.Find_Card_By_ID( transaction.card ).then((result)=>{card=result;
     
   
@@ -199,12 +188,4 @@ export async function Validate_Transaction(req:express.Request, res:express.Resp
 
 });
      }
-    }
-    catch(err){
-            console.log(err);    
-            TR.accepted=false;
-            TR.error="Authenticaion error";
-            ResSent=true;
-            res.send(TR);       
-    }
-}
+    
