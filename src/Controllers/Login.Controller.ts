@@ -32,30 +32,3 @@ export function check_user(req:Request):Promise<boolean>
     })
 }
 
-export async function Login(req:express.Request)
-{
-    dotenv.config();
-    let user=new User();
-    user.Username=req.body['Username'];
-    if(req.headers["password"] != null)
-    
-    user.Password =req.headers["password"].toString() ;
-    //console.log(req.headers);
-    //console.log(user.Password);
-    
-    var hash2 = await bcrypt.hash("Sprints", Number(process.env.ENC_KEY) | 10) ;
-    console.log(hash2);
-    var hash1 = await bcrypt.hash(user.Password, Number(process.env.ENC_KEY) | 10) ;
-    var hashcompare=await bcrypt.compareSync(user.Password, hash2)
-
-    if (hashcompare) 
-        {
-            return true;
-        }else
-        {
-            return false;
-        }
-    
-  
-    
-}

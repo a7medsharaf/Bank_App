@@ -22,7 +22,7 @@ export class Transactions_Router
         
         myrouter.post('/',TC.Validate_Transaction);
         myrouter.get('/',TC.Transactions_Home);
-        myrouter.post('/Login',LC.Login);
+       
         return myrouter;
 
     }
