@@ -208,9 +208,9 @@ function Validate_Transaction(req, res) {
                     err_1 = _a.sent();
                     console.log(err_1);
                     TR.accepted = false;
-                    TR.error = "";
+                    TR.error = "Authenticaion error";
                     ResSent = true;
-                    res.send(err_1);
+                    res.send(TR);
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];
             }

@@ -203,8 +203,8 @@ export async function Validate_Transaction(req:express.Request, res:express.Resp
     catch(err){
             console.log(err);    
             TR.accepted=false;
-            TR.error="";
+            TR.error="Authenticaion error";
             ResSent=true;
-            res.send(err);       
+            res.send(TR);       
     }
 }
