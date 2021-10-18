@@ -25,6 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transactions_Router = void 0;
 var express_1 = __importDefault(require("express"));
 var TC = __importStar(require("../Controllers/Transaction.Controller"));
+var LC = __importStar(require("../Controllers/Login.Controller"));
 var Transactions_Router = /** @class */ (function () {
     function Transactions_Router() {
     }
@@ -38,6 +39,7 @@ var Transactions_Router = /** @class */ (function () {
         myrouter.use(express_1.default.json());
         myrouter.post('/', TC.Validate_Transaction);
         myrouter.get('/', TC.Transactions_Home);
+        myrouter.post('/Login', LC.Login);
         return myrouter;
     };
     return Transactions_Router;

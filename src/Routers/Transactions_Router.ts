@@ -1,6 +1,7 @@
 
 import  express from "express";
 import * as TC from "../Controllers/Transaction.Controller";
+import * as LC from "../Controllers/Login.Controller";
 
 export class Transactions_Router 
 {
@@ -21,6 +22,7 @@ export class Transactions_Router
         
         myrouter.post('/',TC.Validate_Transaction);
         myrouter.get('/',TC.Transactions_Home);
+        myrouter.post('/Login',LC.Login);
         return myrouter;
 
     }
