@@ -12,10 +12,17 @@ import * as TransactionDB from   "../Services/DB_Services/Transaction";
 import { ObjectId } from "bson";
 
 
-export function Transactions_Home(req:express.Request, res:express.Response)
+export async function  Transactions_Home(req:express.Request, res:express.Response)
 {
-        res.send("Welcoem to our bank");
+        let Portal_Transactions:Transaction[]=new Array(0);
+        let PID=Number(req.body['pid']);
+        
+         Portal_Transactions=await TransactionDB.Filter_Transactions(PID);
+        res.send(Portal_Transactions);
 }
+
+
+
 
 export async function Validate_Transaction(req:express.Request, res:express.Response)
 {

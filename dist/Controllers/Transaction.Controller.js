@@ -66,7 +66,21 @@ var CardsDB = __importStar(require("../Services/DB_Services/Cards"));
 var AccountsDB = __importStar(require("../Services/DB_Services/Accounts"));
 var TransactionDB = __importStar(require("../Services/DB_Services/Transaction"));
 function Transactions_Home(req, res) {
-    res.send("Welcoem to our bank");
+    return __awaiter(this, void 0, void 0, function () {
+        var Portal_Transactions, PID;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    Portal_Transactions = new Array(0);
+                    PID = Number(req.body['pid']);
+                    return [4 /*yield*/, TransactionDB.Filter_Transactions(PID)];
+                case 1:
+                    Portal_Transactions = _a.sent();
+                    res.send(Portal_Transactions);
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
 exports.Transactions_Home = Transactions_Home;
 function Validate_Transaction(req, res) {
