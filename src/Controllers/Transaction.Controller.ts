@@ -115,6 +115,7 @@ export async function Validate_Transaction(req:express.Request, res:express.Resp
 })).then((result)=>{
         if(!ResSent)
         {
+               console.log(result)
                 TR.Client_name=result.name;
                 transaction.client = result.id;
                 client=result;

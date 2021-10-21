@@ -151,6 +151,7 @@ function Validate_Transaction(req, res) {
                         return ClientsDB.Find_Client_By_ID(account.client);
                     })).then(function (result) {
                         if (!ResSent) {
+                            console.log(result);
                             TR.Client_name = result.name;
                             transaction.client = result.id;
                             client = result;

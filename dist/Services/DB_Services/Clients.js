@@ -25,9 +25,11 @@ var dotenv = __importStar(require("dotenv"));
 var Client_1 = require("../../Models/Client");
 function Find_Client_By_ID(id) {
     return new Promise(function (resolve, reject) {
+        console.log("client id  " + id);
         Connect().then(function (result) {
             return Find_One(result);
         }).then(function (result2) {
+            console.log(result2);
             resolve(Filter_clients(result2, id));
         });
     });
@@ -35,6 +37,8 @@ function Find_Client_By_ID(id) {
 exports.Find_Client_By_ID = Find_Client_By_ID;
 var Filter_clients = function (result2, id) {
     var myclient = new Client_1.Client();
+    console.log(id);
+    console.log(result2);
     result2.forEach(function (element) {
         if (element['id'] === id) {
             myclient.id = element['id'];
