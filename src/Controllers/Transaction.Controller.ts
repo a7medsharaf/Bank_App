@@ -28,7 +28,7 @@ export async function Validate_Transaction(req:express.Request, res:express.Resp
 {
     let transaction=new Transaction();
    
-    transaction.card=Number(req.body['cardid']);
+    transaction.card=(req.body['cardid']);
     transaction.ccv=req.body['ccv'];
     transaction.amount=Number(req.body['amount']);
     transaction.merchant=req.body['merchant'];
@@ -44,12 +44,20 @@ export async function Validate_Transaction(req:express.Request, res:express.Resp
     var newbalance:number=0;
     let operation_date_time=new Date().toUTCString();
 
-     
+   card=await CardsDB.Find_Card_By_ID( transaction.card );
+   TR=card.Validate_Against_Transaction(transaction);
+   if(TR.accepted==false)
+   {
+        ResSent=true;
+        res.send(TR);     
+   }
+
+
     
     CardsDB.Find_Card_By_ID( transaction.card ).then((result)=>{card=result;
     
   
-
+  
     if(card.id != transaction.card && !ResSent)
     {
             TR.accepted=false;

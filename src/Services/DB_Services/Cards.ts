@@ -6,32 +6,59 @@ import { Card } from "../../Models/Card";
 import { Client } from "../../Models/Client";
 import { Transaction } from "../../Models/Transaction";
 
-export function Find_Card_By_ID(id:number):Promise<Card>
+
+/*
+The original connection code
+
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017/";
+
+MongoClient.connect(url, function(err, db) {
+  if (err) throw err;
+  var dbo = db.db("mydb");
+  dbo.createCollection("customers", function(err, res) {
+    if (err) throw err;
+    console.log("Collection created!");
+    db.close();
+  });
+});
+
+
+*/
+
+export async function Find_Card_By_ID(id:string):Promise<Card>
 {
+    let Myconnection:MongoClient= await Connect();
+    let MyDocs:Document[]=await Find_One(Myconnection);
+    return Filter_cards(MyDocs,id);
 
-  return new Promise((resolve,reject)=>{
-
-    Connect().then((result)=>
-    {
-            return Find_One(result)
-    }
-  ).then(
-    (result2)=>
-    {
- 
-     resolve(Filter_cards(result2,id));
-    }
-  )
-
-   });
-  
 }
 
 
-let Filter_cards= function(result2:Document[],id:Number):Card
+
+
+const Connect= async ():Promise<MongoClient>=>
+  { 
+    return await MongoClient.connect(process.env.URI as string);
+  
+  }
+
+
+
+const Find_One=async(db:MongoClient) : Promise<Document[]>=>
 {
-  var mycard:Card =new Card(0);
+  let dbo:Db = db.db(process.env.DBNAME as string);
+
+  return await dbo.collection("Cards").find({}).toArray();
+  
+}
+
+const Filter_cards= function(result2:Document[],id:string):Card
+{
+  var mycard:Card =new Card("");
   result2.forEach(element => {
+   
+   console.log(result2)
     if(element['id']===id)
     {
 
@@ -47,44 +74,3 @@ let Filter_cards= function(result2:Document[],id:Number):Card
   });
   return(mycard);   
 }
-
-function Connect():Promise<MongoClient>
-{
-  return new Promise((resolve,reject)=>{
-
-    dotenv.config();
-    MongoClient.connect(process.env.URI as string, function(err, db) {
-      if (err) reject(err);
-      
-    
-      if(db!=undefined)
-      {
-        resolve(db);
-      }
-    });
-    
-
-  })
-}
-
-
-function Find_One(db:MongoClient) : Promise<Document[]>
-{
-  return new Promise((resolve,reject)=>{
-
-    let dbo:Db = db.db(process.env.DBNAME as string);
-    dbo.collection("Cards").find({}).toArray(function(err, result) {
-      if (err) reject(err);
-
-      if(result!=undefined)
-      {
-        resolve(result);
-      }
-     // @ts-ignore
-      db.close();
-    });
-  
-  
-  })
-}
-

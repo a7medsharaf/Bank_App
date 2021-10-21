@@ -108,47 +108,27 @@ let Filter_Accouns_by_Paymentid= function(result2:Document[],id:Number):Account
   return(myAccount);   
 }
 
-
-function Connect():Promise<MongoClient>
+const Connect=async ():Promise<MongoClient> =>
 {
-  return new Promise((resolve,reject)=>{
-
-    dotenv.config();
-    MongoClient.connect(process.env.URI as string, function(err, db) {
-      if (err) reject(err);
-     
-    
-      if(db!=undefined)
-      {
-        resolve(db);
-      }
-    });
-    
-
-  })
+  return await MongoClient.connect(process.env.URI as string);
 }
 
-
-function Find_One(db:MongoClient) : Promise<Document[]>
+const Find_One=async (db:MongoClient): Promise<Document[]>=>
 {
-  return new Promise((resolve,reject)=>{
-
-    let dbo:Db = db.db(process.env.DBNAME as string);
-    dbo.collection("Accounts").find({}).toArray(function(err, result) {
-      if (err) reject(err);
-
-      if(result!=undefined)
-      {
-        resolve(result);
-      }
-     // @ts-ignore
-      db.close();
-    });
-  
-  
-  })
+  let dbo:Db = db.db(process.env.DBNAME as string);
+  return await dbo.collection("Accounts").find({}).toArray();
 }
+/*
+const update_onee=async(db:MongoClient,acc:Account,Added_Val:number):Promise<Account>=>
+{
+  let dbo:Db = db.db(process.env.DBNAME as string);
+  let account_new:Account =new Account();
+  account_new=acc;
+  account_new.balance=Number(acc.balance) + Number(Added_Val);
+  return await dbo.collection("Accounts").updateOne({id:acc.id},{$set:{Balance:acc.balance} });
 
+}
+*/
 function update_one(db:MongoClient,acc:Account,Added_Val:number)
 {
   return new Promise<Account>((resolve,reject)=>{

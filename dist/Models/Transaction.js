@@ -5,7 +5,7 @@ var Transaction = /** @class */ (function () {
     function Transaction() {
         this.client = 0;
         this.account = 0;
-        this.card = 0;
+        this.card = "";
         this.amount = 0;
         this.merchant = "";
         this.timestamp = "";

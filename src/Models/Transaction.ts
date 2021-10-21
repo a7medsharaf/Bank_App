@@ -1,8 +1,10 @@
+import { Double } from "bson";
+
 export class Transaction {
     Payment_gateway_ID:number;
     client:number;
     account:number;
-    card:number;
+    card:string;
     amount:number;
     merchant:string;
     timestamp:string;
@@ -11,7 +13,7 @@ export class Transaction {
     constructor() {
       this.client = 0;
       this.account=0;
-      this.card=0;
+      this.card= "";
       this.amount=0;
       this.merchant="";
       this.timestamp="";

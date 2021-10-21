@@ -26,7 +26,7 @@ export function insert_One(data: {
     clientID2: number,
     T_type: string,
     accountID: number,
-    cardID: number,
+    cardID: string,
     amount: number,
     merchant: string,
     timestamp: string,
