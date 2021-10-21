@@ -10,7 +10,7 @@ export function Find_Client_By_ID(id:number):Promise<Client>
 {
 
   return new Promise((resolve,reject)=>{
-
+console.log("client id  "+id)
     Connect().then((result)=>
     {
             return Find_One(result)
@@ -18,7 +18,7 @@ export function Find_Client_By_ID(id:number):Promise<Client>
   ).then(
     (result2)=>
     {
- 
+      console.log(result2)
      resolve(Filter_clients(result2,id));
     }
   )
@@ -31,6 +31,8 @@ export function Find_Client_By_ID(id:number):Promise<Client>
 let Filter_clients= function(result2:Document[],id:Number):Client
 {
   var myclient:Client =new Client();
+  console.log(id)
+  console.log(result2)
   result2.forEach(element => {
     if(element['id']===id)
     {
